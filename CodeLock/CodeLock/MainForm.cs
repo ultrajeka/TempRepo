@@ -72,6 +72,11 @@ namespace CodeLock
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
+            Compare();
+        }
+
+        private void Compare()
+        {
             if (inputString == randomNumberString)
                 pbCongrats.Image = Resources.saluteImage;
             else
@@ -79,5 +84,19 @@ namespace CodeLock
 
             pbCongrats.Visible = true;
         }
+
+        private void tbInput_TextChanged(object sender, EventArgs e)
+        {
+            inputString = tbInput.Text;
+        }
+
+        private void tbInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                Compare();
+            }
+        }
+
     }
 }
