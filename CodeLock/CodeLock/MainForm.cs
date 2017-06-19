@@ -14,9 +14,14 @@ namespace CodeLock
     public partial class MainForm : Form
     {
         string randomNumberString;
-        static Random rnd = new Random();
+        string randomPukString;
 
+        byte tries = 3, pukTries = 3;
+
+        static Random rnd = new Random();
+        
         string inputString;
+
         public MainForm()
         {
             InitializeComponent();
@@ -30,8 +35,10 @@ namespace CodeLock
             btnEight.Click += btnClickHandler;
             btnNine.Click += btnClickHandler;
             btnZero.Click += btnClickHandler;
-            randomNumberString = "00000";
+            btnCompare.Enabled = false;
             inputString = "";
+            pbCongrats.Image = Resources.NavesnojZamok1;
+            pbCongrats.Visible = true;
         }
 
         void btnClickHandler(object sender, EventArgs e)
@@ -49,25 +56,23 @@ namespace CodeLock
             }
         }
 
-        private void btnEmpty1_Click(object sender, EventArgs e)
-        {
-            pbCongrats.Visible = false;
-            tbInput.Text = inputString = string.Empty;
-            lblRandomNum.Text = randomNumberString = "00000";
-        }
-
         private void btnGenNumber_Click(object sender, EventArgs e)
         {
+            btnCompare.Enabled = true;
+            lblPass.Visible = true;
+            tbInput.Visible = true;
             randomNumberString = "";
+            randomPukString = "";
             tbInput.Text = inputString = string.Empty;
-            pbCongrats.Visible = false;
-
+            
             for (int i = 0; i < 5; i++)
-            {
                 randomNumberString += rnd.Next(0, 10).ToString();
-            }
+
+            for (int i = 0; i < 3; i++)
+                randomPukString += rnd.Next(0, 10).ToString();
 
             lblRandomNum.Text = randomNumberString;
+            lblRandomPuk.Text = randomPukString;
         }
 
         private void btnCompare_Click(object sender, EventArgs e)
@@ -78,18 +83,64 @@ namespace CodeLock
         private void Compare()
         {
             if (inputString == randomNumberString)
+            {
                 pbCongrats.Image = Resources.saluteImage;
+                tries = 3;
+                lblTries.Visible = !true;
+                lblTriesLeft.Visible = !true;
+            }
             else
-                pbCongrats.Image = Resources.badResultImage;
+            {
+                lblTries.Visible = true;
+                lblTriesLeft.Visible = true;
+                lblTries.Text = tries.ToString();
+                pbCongrats.Image = Resources.KnDq;
 
+                if (tries == 0)
+                {
+                    lblPass.Visible = !true;
+                    lblRandomNum.Visible = !true;
+                    PukCode();
+                    tries = 1;
+                }
+                tries -= 1;
+            }
             pbCongrats.Visible = true;
         }
 
+        private void PukCode()
+        {
+            lblRandomPuk.Visible = true; 
+            lblPuk.Visible = true;       
+            btnGenNumber.Enabled = false;
+            lblTries.Visible = false;    
+            lblTriesLeft.Visible = false;
+
+            if (inputString == randomPukString)
+            {
+                pbCongrats.Image = Resources.saluteImage;
+                btnGenNumber.Enabled = true;
+            }
+            else
+            {
+                lblPukTries.Visible = true;
+                lblPukTriesLeft.Visible = true;
+                lblPukTries.Text = pukTries.ToString();
+                pbCongrats.Image = Resources.KnDq;
+
+                if (pukTries == 0)
+                {
+                    pbCongrats.Image = Resources.badResultImage;
+                    pukTries = 1;
+                    btnGenNumber.Enabled = true;
+                }
+                pukTries -= 1;
+            }
+        }
         private void tbInput_TextChanged(object sender, EventArgs e)
         {
             inputString = tbInput.Text;
         }
-
         private void tbInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Enter)
@@ -97,6 +148,5 @@ namespace CodeLock
                 Compare();
             }
         }
-
     }
 }
